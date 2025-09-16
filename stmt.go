@@ -2,6 +2,8 @@ package sqlmetrics
 
 import (
 	"database/sql/driver"
+	"fmt"
+	"math"
 	"time"
 )
 
@@ -21,6 +23,25 @@ func (ms *metricsStmt) Close() error {
 // NumInput num input
 func (ms *metricsStmt) NumInput() int {
 	return ms.Stmt.NumInput()
+}
+
+// NamedValueChecker 实现参数转换
+func (ms *metricsStmt) CheckNamedValue(nv *driver.NamedValue) error {
+	switch v := nv.Value.(type) {
+	case uint64:
+		if v > math.MaxInt64 {
+			// 超过 int64 范围，转成字符串
+			nv.Value = fmt.Sprintf("%d", v)
+			return nil
+		}
+		// 转成 int64，避免触发 default 报错
+		nv.Value = int64(v)
+		return nil
+	case int64:
+		// 原样返回，允许负数
+		return nil
+	}
+	return driver.ErrSkip // 交给默认逻辑处理
 }
 
 // Exec exec

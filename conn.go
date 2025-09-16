@@ -3,11 +3,31 @@ package sqlmetrics
 import (
 	"context"
 	"database/sql/driver"
+	"strconv"
 	"time"
 )
 
 type metricsConn struct {
 	driver.Conn
+}
+
+// NamedValueChecker 实现参数转换
+func (mc *metricsConn) CheckNamedValue(nv *driver.NamedValue) error {
+	switch v := nv.Value.(type) {
+	case uint64:
+		if v >= 1<<63 {
+			// 超过 int64 范围，转成字符串
+			nv.Value = strconv.FormatUint(v, 10)
+			return nil
+		}
+		// 转成 int64，避免触发 default 报错
+		nv.Value = int64(v)
+		return nil
+	case int64:
+		// 原样返回，允许负数
+		return nil
+	}
+	return driver.ErrSkip // 交给默认逻辑处理
 }
 
 func (mc *metricsConn) Prepare(query string) (driver.Stmt, error) {

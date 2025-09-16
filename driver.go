@@ -7,12 +7,12 @@ import (
 )
 
 type metricsDriver struct {
-	mysql.MySQLDriver
+	parent *mysql.MySQLDriver
 }
 
 // Open driver open
-func (md *metricsDriver) Open(name string) (driver.Conn, error) {
-	conn, err := md.MySQLDriver.Open(name)
+func (md *metricsDriver) Open(dsn string) (driver.Conn, error) {
+	conn, err := md.parent.Open(dsn)
 	if err != nil {
 		return nil, err
 	}
