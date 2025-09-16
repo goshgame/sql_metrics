@@ -2,15 +2,17 @@ package sqlmetrics
 
 import (
 	"database/sql/driver"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 type metricsDriver struct {
-	parent driver.Driver
+	mysql.MySQLDriver
 }
 
 // Open driver open
 func (md *metricsDriver) Open(name string) (driver.Conn, error) {
-	conn, err := md.parent.Open(name)
+	conn, err := md.Open(name)
 	if err != nil {
 		return nil, err
 	}

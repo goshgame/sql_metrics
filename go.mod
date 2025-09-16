@@ -1,9 +1,9 @@
 module github.com/goshgame/sql_metrics
 
-go 1.24.1
+go 1.23.3
 
 require (
-	github.com/go-sql-driver/mysql v1.8.1
+	github.com/go-sql-driver/mysql v1.9.3
 	github.com/prometheus/client_golang v1.23.2
 )
 
