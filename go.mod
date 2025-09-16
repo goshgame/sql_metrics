@@ -1,4 +1,4 @@
-module github.com/Bensonzjy/sql_metrics
+module github.com/goshgame/sql_metrics
 
 go 1.24.1
 
