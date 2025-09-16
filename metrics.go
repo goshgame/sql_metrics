@@ -10,12 +10,12 @@ import (
 
 var (
 	sqlMetricsHandleTotal = promauto.NewCounterVec(prometheus.CounterOpts{
-		Name: "sqlx_handle_total",
-		Help: "Total number of sqlx handle make.",
+		Name: "sql_handle_total",
+		Help: "Total number of sql handle make.",
 	}, []string{"table", "method", "bcode"})
 	sqlMetricsHandleDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
-		Name: "sqlx_handle_duration",
-		Help: "The sqlx handle latencies in seconds",
+		Name: "sql_handle_duration",
+		Help: "The sql handle latencies in seconds",
 	}, []string{"table", "method", "bcode"})
 )
 
