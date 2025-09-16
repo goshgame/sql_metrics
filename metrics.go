@@ -9,14 +9,36 @@ import (
 )
 
 var (
-	sqlMetricsHandleTotal = promauto.NewCounterVec(prometheus.CounterOpts{
+	// SQLMetricsHandleTotal - SQL metrics handle total
+	SQLMetricsHandleTotal = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "sql_handle_total",
 		Help: "Total number of sql handle make.",
 	}, []string{"table", "method", "bcode"})
-	sqlMetricsHandleDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
+	// SQLMetricsHandleDuration - SQL metrics handle latencies in seconds
+	SQLMetricsHandleDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
 		Name: "sql_handle_duration",
 		Help: "The sql handle latencies in seconds",
 	}, []string{"table", "method", "bcode"})
+	// SQLDBMaxOpenConns - SQL metrics max open conns
+	SQLDBMaxOpenConns = promauto.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "sql_db_max_open_conns",
+		Help: "Maximum number of open connections to the database.",
+	}, []string{"db", "master_slave"})
+	// SQLDBOpenConns - SQL metrics open conns(use and idle)
+	SQLDBOpenConns = promauto.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "sql_db_open_conns",
+		Help: "The number of established connections both in use and idle.",
+	}, []string{"db", "master_slave"})
+	// SQLDBInUseConns - SQL metrics inuse conns
+	SQLDBInUseConns = promauto.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "sql_db_in_use_conns",
+		Help: "The number of connections currently in use.",
+	}, []string{"db", "master_slave"})
+	// SQLDBIdleConns - SQL metrics idel conns
+	SQLDBIdleConns = promauto.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "sql_db_idle_conns",
+		Help: "The number of idle connections.",
+	}, []string{"db", "master_slave"})
 )
 
 func getMetricCode(err error) string {
@@ -93,6 +115,6 @@ func reportMetrics(query string, fallbackMethod string, startTime time.Time, err
 	bcode := getMetricCode(err)
 	table := extractTable(query)
 	duration := float64(time.Since(startTime).Milliseconds()) / 1000
-	sqlMetricsHandleTotal.With(prometheus.Labels{"table": table, "method": method, "bcode": bcode}).Inc()
-	sqlMetricsHandleDuration.With(prometheus.Labels{"table": table, "method": method, "bcode": bcode}).Observe(duration)
+	SQLMetricsHandleTotal.With(prometheus.Labels{"table": table, "method": method, "bcode": bcode}).Inc()
+	SQLMetricsHandleDuration.With(prometheus.Labels{"table": table, "method": method, "bcode": bcode}).Observe(duration)
 }
