@@ -12,7 +12,7 @@ type metricsDriver struct {
 
 // Open driver open
 func (md *metricsDriver) Open(name string) (driver.Conn, error) {
-	conn, err := md.Open(name)
+	conn, err := md.MySQLDriver.Open(name)
 	if err != nil {
 		return nil, err
 	}
