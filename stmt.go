@@ -2,6 +2,7 @@ package sqlmetrics
 
 import (
 	"database/sql/driver"
+	"strconv"
 	"time"
 )
 
@@ -23,9 +24,22 @@ func (ms *metricsStmt) NumInput() int {
 	return ms.Stmt.NumInput()
 }
 
+func convertArgs(args []driver.Value) []driver.Value {
+	newArgs := make([]driver.Value, len(args))
+	for i, v := range args {
+		if u, ok := v.(uint64); ok && u > 1<<63-1 {
+			newArgs[i] = strconv.FormatUint(u, 10)
+		} else {
+			newArgs[i] = v
+		}
+	}
+	return newArgs
+}
+
 // Exec exec
 func (ms *metricsStmt) Exec(args []driver.Value) (driver.Result, error) {
 	startTime := time.Now()
+	args = convertArgs(args)
 	res, err := ms.Stmt.Exec(args)
 	reportMetrics(ms.query, "exec", startTime, err)
 	return res, err
@@ -34,6 +48,7 @@ func (ms *metricsStmt) Exec(args []driver.Value) (driver.Result, error) {
 // Query query
 func (ms *metricsStmt) Query(args []driver.Value) (driver.Rows, error) {
 	startTime := time.Now()
+	args = convertArgs(args)
 	rows, err := ms.Stmt.Query(args)
 	reportMetrics(ms.query, "query", startTime, err)
 	return rows, err
