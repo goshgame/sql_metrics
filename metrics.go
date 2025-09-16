@@ -79,8 +79,8 @@ func extractOp(query string) string {
 // 从 SQL 里提取 table 名（简单版：取 FROM/INTO/UPDATE 后第一个单词）
 func extractTable(query string) string {
 	q := strings.ToLower(query)
-	if strings.Contains(q, "from") {
-		parts := strings.Split(q, "from")
+	if strings.Contains(q, "from ") {
+		parts := strings.Split(q, "from ")
 		if len(parts) > 1 {
 			words := strings.Fields(parts[1])
 			if len(words) > 0 {
@@ -88,8 +88,8 @@ func extractTable(query string) string {
 			}
 		}
 	}
-	if strings.Contains(q, "into") {
-		parts := strings.Split(q, "into")
+	if strings.Contains(q, "into ") {
+		parts := strings.Split(q, "into ")
 		if len(parts) > 1 {
 			words := strings.Fields(parts[1])
 			if len(words) > 0 {
@@ -97,7 +97,7 @@ func extractTable(query string) string {
 			}
 		}
 	}
-	if strings.HasPrefix(q, "update") {
+	if strings.HasPrefix(q, "update ") {
 		words := strings.Fields(q)
 		if len(words) > 1 {
 			return words[1]
