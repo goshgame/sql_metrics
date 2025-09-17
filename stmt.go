@@ -2,8 +2,8 @@ package sqlmetrics
 
 import (
 	"database/sql/driver"
-	"fmt"
 	"math"
+	"strconv"
 	"time"
 )
 
@@ -31,7 +31,7 @@ func (ms *metricsStmt) CheckNamedValue(nv *driver.NamedValue) error {
 	case uint64:
 		if v > math.MaxInt64 {
 			// 超过 int64 范围，转成字符串
-			nv.Value = fmt.Sprintf("%d", v)
+			nv.Value = strconv.FormatUint(v, 10)
 			return nil
 		}
 		// 转成 int64，避免触发 default 报错
